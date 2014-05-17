@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'itc'
+
+def usage(msg="")
+    puts "Error: #{msg}\n" unless msg == ""
+    exit 1
+end
+
+usage "No command specified" if ARGV.size() < 1
+
+begin
+    cmd = ARGV.shift
+    filters = {}
+
+    while action = ARGV.shift do
+        sp = action.split("=", 2)
+        filters[sp[0]] = sp.size() == 1 ? "" : sp[1]
+    end 
+
+    Command.execute cmd, filters
+rescue InvalidFilterNumberException => e
+    usage e.message
+rescue UnknownFilterException => e
+    usage "Unknown filter #{e.message}"
+rescue UnknownCommandException 
+    usage "Unknown command #{cmd}"
+end
+
