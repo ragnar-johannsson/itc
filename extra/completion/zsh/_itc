@@ -1,0 +1,52 @@
+#compdef itc
+
+local context state state_descr line expl list_item
+local -a commands
+local -A opt_args
+
+function _itc_list {
+    local i filters=""
+    for i in {2..$#line}; do
+        if [[ ! $line[$i] == $list_item* ]]; then
+            filters="${filters}$line[$i] "
+        fi
+    done
+
+    local cmd item IFS=$'\n'
+    cmd="itc list $filters $list_item"
+    for item in $(eval ${cmd}); do
+        compadd $expl[@] -- $item
+    done
+
+    return 0
+}
+
+_arguments '1:command:->cmds' '*:filter:->filters' && ret=0
+
+case "$state" in
+    (cmds)
+        commands=(
+            'list:Search for tracks' \
+            'play:Play' \
+            'index:(Re)index the music database' \
+            'next:Next song' \
+            'previous:Previous song' \
+            'pause:Pause playing')
+        _describe 'values' commands
+        ;;
+    (filters)
+        case "$line[1]" in
+            (play)
+                ;&
+            (list)
+                _values -w 'option' \
+                    'artist[Artist name]:artist:{list_item=artist _itc_list}' \
+                    'album[Album name]:album:{list_item=album _itc_list}' \
+                    'song[Song name]:song:{list_item=song _itc_list}' \
+                    'genre[Genre name]:genre:{list_item=genre _itc_list}' \
+                    'year[Release year]:year:{list_item=year _itc_list}'
+                ;;
+        esac
+        ;;
+esac
+
