@@ -27,6 +27,7 @@ case "$state" in
     (cmds)
         commands=(
             'list:Search for tracks' \
+            'status:Show playing status, playlist position' \
             'play:Play' \
             'index:(Re)index the music database' \
             'next:Next song' \

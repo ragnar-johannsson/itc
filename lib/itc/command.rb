@@ -7,7 +7,7 @@ class Command
         xml = ENV["HOME"] + "/Music/iTunes/iTunes Music Library.xml"
 
         supported_filters = ("artist" "album" "song" "genre" "year")
-        filters.keys.each do |filter| 
+        filters.keys.each do |filter|
             raise UnknownFilterException, filter unless supported_filters.include? filter
         end
 
@@ -25,6 +25,19 @@ class Command
             player.next
         when "previous", "prev"
             player.previous
+        when "status"
+            if player.state == "stopped"
+                puts "iTunes is #{player.state}\n"
+                return
+            end
+
+            curr_song = player.current_track
+            state_icon = player.state == "playing" ? "▶" : "‖"
+            playlist = player.current_playlist_tracks.split(", ")
+            db.list_by_ids(playlist.size < 1000 ? playlist : [curr_song]).collect do |track|
+                printf " %s %s - %s - %s\n", track[0].to_s == curr_song ? state_icon : " ",
+                track[1], track[2], track[3]
+            end
         else
             raise UnknownCommandException
         end
