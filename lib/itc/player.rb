@@ -2,13 +2,13 @@
 
 class Player
     def execute(script)
-        `osascript -e '#{script}'`
+        `osascript -e '#{script}'`.gsub(/\n$/, "")
     end
 
     def play(tracks)
         if tracks.empty?
             execute 'tell application "iTunes" to play'
-        else 
+        else
             tracks = tracks.collect {|track| "database ID is #{track}"}
             execute <<-SCRIPT
                 set pName to "itc"
@@ -38,7 +38,23 @@ class Player
         execute 'tell application "iTunes" to next track'
     end
 
-    def previous 
+    def previous
         execute 'tell application "iTunes" to previous track'
+    end
+
+    def state
+        execute 'tell application "iTunes" to return player state'
+    end
+
+    def current_track
+        execute 'tell application "iTunes" to return database ID of current track'
+    end
+
+    def current_playlist_tracks
+        execute <<-SCRIPT
+            tell application "iTunes"
+                return database ID of tracks of current playlist
+            end tell
+        SCRIPT
     end
 end
