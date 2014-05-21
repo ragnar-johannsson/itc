@@ -67,4 +67,17 @@ class Database
             select track_id from tracks #{condition} order by artist, album, disc_number, track_number
         SQL
     end
+
+    def list_by_ids(ids)
+        c = ids.collect { |i| "track_id = #{i}" }
+        condition = c.empty? ? "" : "where #{c.join(' or ')}"
+        @db.execute <<-SQL
+            select
+                track_id, artist, album, song
+            from
+                tracks #{condition}
+            order by
+                artist, album, disc_number, track_number
+        SQL
+    end
 end
