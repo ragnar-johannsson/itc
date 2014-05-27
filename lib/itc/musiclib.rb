@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'htmlentities'
+
 class MusicLibrary 
     attr_accessor :file, :tracks
 
@@ -11,6 +13,7 @@ class MusicLibrary
     end
 
     def parse_xml
+        entities = HTMLEntities.new
         in_tracks = false
         track = {}
 
@@ -25,7 +28,7 @@ class MusicLibrary
             if in_tracks then
                 if line =~ /^\t\t\t<key>(.*)<\/key><(date|integer|string)>(.*)<\/.*>$/
                     key = $1.downcase.split.join("_").intern
-                    track[key] = $3.to_s
+                    track[key] = entities.decode($3.to_s)
                     next
                 elsif line =~ /^\t\t<\/dict>$/ then
                     @tracks.push(track.dup)
