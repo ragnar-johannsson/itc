@@ -3,8 +3,31 @@
 require 'itc'
 
 def usage(msg="")
-    puts "Error: #{msg}\n" unless msg == ""
-    exit 1
+    puts "Error: #{msg}\n\n" unless msg == ""
+
+    puts <<-USAGE.gsub(/^    /, "")
+    Usage: itc <command> [filters...]
+
+    Commands:
+        help        - This message
+        index       - (Re)index the music database
+        list        - Search for tracks
+        next        - Next song
+        pause       - Pause playing
+        play        - Play
+        previous    - Previous song
+        status      - Playing status, playlist position
+
+    Filters (valid with play and list commands):
+        artist      - Artist name
+        album       - Album name
+        song        - Song name
+        year        - Release yeaar
+        genre       - Genre name
+
+    USAGE
+
+    exit msg == "" ? 0 : 1
 end
 
 usage "No command specified" if ARGV.size() < 1
@@ -12,6 +35,8 @@ usage "No command specified" if ARGV.size() < 1
 begin
     cmd = ARGV.shift
     filters = {}
+
+    usage if cmd == "help"
 
     while action = ARGV.shift do
         sp = action.split("=", 2)
